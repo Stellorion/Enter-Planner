@@ -7,76 +7,96 @@ import { InfoForm } from './InfoForm';
 import { PasswordForm } from './PasswordForm';
 import { ProfileInputs } from '@/src/types/Inputs';
 
+interface PasswordInputs {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
 export function ProfileForm() {
   const [isLoading, setIsLoading] = useState(false);
 
-  // Using react-hook-form for profile form validation
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<ProfileInputs>();
+  // Profile form
+  const profileForm = useForm<ProfileInputs>();
+  const { register: registerProfile, handleSubmit: handleProfileSubmit, formState: { errors: profileErrors } } = profileForm;
 
-  const handleProfileSubmit: SubmitHandler<ProfileInputs> = async (data) => {
+  // Password form
+  const passwordForm = useForm<PasswordInputs>();
+  const { register: registerPassword, handleSubmit: handlePasswordSubmit, formState: { errors: passwordErrors }, watch: watchPassword, reset: resetPassword } = passwordForm;
+
+  const onProfileSubmit: SubmitHandler<ProfileInputs> = async (data) => {
     setIsLoading(true);
 
     try {
-      // Simulate API call for profile update
-      setTimeout(() => {
-        setIsLoading(false);
-        toast({
-          title: 'Profile updated',
-          description: 'Your profile has been updated successfully.',
-        });
-      }, 1000);
+      const response = await fetch('/api/auth/profile', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          firstName: data.firstName,
+          lastName: data.lastName,
+          email: data.email,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update profile');
+      }
+
+      setIsLoading(false);
+      toast.success('Profile updated successfully');
     } catch (error) {
       setIsLoading(false);
-      toast({
-        title: 'Profile update failed',
-        description: 'An error occurred while updating your profile.',
-        variant: 'destructive',
-      });
+      toast.error('Failed to update profile');
     }
   };
 
-  const handlePasswordSubmit = async (passwordData) => {
-    if (passwordData.newPassword !== passwordData.confirmPassword) {
-      toast({
-        title: "Passwords don't match",
-        description: 'New password and confirm password must match.',
-        variant: 'destructive',
-      });
+  const onPasswordSubmit: SubmitHandler<PasswordInputs> = async (data) => {
+    if (data.newPassword !== data.confirmPassword) {
+      toast.error('Passwords do not match');
       return;
     }
 
     setIsLoading(true);
 
-    // Simulate password update process
-    setTimeout(() => {
-      setIsLoading(false);
-      toast({
-        title: 'Password updated',
-        description: 'Your password has been updated successfully.',
+    try {
+      const response = await fetch('/api/auth/password', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          currentPassword: data.currentPassword,
+          newPassword: data.newPassword,
+        }),
       });
-    }, 1000);
+
+      if (!response.ok) {
+        throw new Error('Failed to update password');
+      }
+
+      setIsLoading(false);
+      toast.success('Password updated successfully');
+      resetPassword();
+    } catch (error) {
+      setIsLoading(false);
+      toast.error('Failed to update password');
+    }
   };
 
   return (
     <div className="grid gap-8">
       {/* Personal Information Form */}
       <InfoForm
-        register={register}
-        errors={errors}
+        register={registerProfile}
+        errors={profileErrors}
         isLoading={isLoading}
-        onSubmit={handleProfileSubmit}
+        onSubmit={handleProfileSubmit(onProfileSubmit)}
       />
 
       {/* Change Password Form */}
       <PasswordForm
-        register={register}
-        errors={errors}
+        register={registerPassword}
+        errors={passwordErrors}
         isLoading={isLoading}
-        onSubmit={handlePasswordSubmit}
+        onSubmit={handlePasswordSubmit(onPasswordSubmit)}
       />
     </div>
   );

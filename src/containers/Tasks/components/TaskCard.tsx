@@ -33,7 +33,7 @@ export function TaskCard({
           {task.dueDate && (
             <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
               <FaRegClock className="mr-1 h-3.5 w-3.5" />
-              {new Date(task.dueDate).toLocaleTimeString().slice(0, 5)}
+              {new Date(task.dueDate).toLocaleTimeString("it-IT").slice(0, 5)}
             </div>
           )}
         </div>

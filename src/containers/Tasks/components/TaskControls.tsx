@@ -15,9 +15,7 @@ export function TaskControls({
     return (
       filters.status !== 'ALL' ||
       filters.dateRange.start ||
-      filters.dateRange.end ||
-      filters.sortBy !== 'createdAt' ||
-      filters.sortOrder !== 'asc'
+      filters.dateRange.end
     );
   };
 

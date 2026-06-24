@@ -13,8 +13,6 @@ const FilterPopover = ({ filters, setFilters }: FilterPopoverProps) => {
         start: null,
         end: null,
       },
-      sortBy: 'createdAt',
-      sortOrder: 'asc',
     });
   };
   console.log({filters});
@@ -72,40 +70,7 @@ const FilterPopover = ({ filters, setFilters }: FilterPopoverProps) => {
         }
       />
 
-      <SelectInput
-        name="sortBy"
-        label="Sort By"
-        value={filters.sortBy}
-        onChange={(e) =>
-          setFilters({
-            ...filters,
-            sortBy: e.target.value as TaskFilters['sortBy'],
-          })
-        }
-        options={[
-          { value: 'createdAt', label: 'Creation Date' },
-          { value: 'dueDate', label: 'Due Date' },
-          { value: 'title', label: 'Title' },
-          { value: 'status', label: 'Status' },
-          { value: 'progress', label: 'Progress' },
-        ]}
-      />
 
-      <SelectInput
-        name="sortOrder"
-        label="Order"
-        value={filters.sortOrder}
-        onChange={(e) =>
-          setFilters({
-            ...filters,
-            sortOrder: e.target.value as TaskFilters['sortOrder'],
-          })
-        }
-        options={[
-          { value: 'asc', label: 'Ascending' },
-          { value: 'desc', label: 'Descending' },
-        ]}
-      />
 
       <div className="mt-4 text-center">
         <button

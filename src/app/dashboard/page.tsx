@@ -1,4 +1,3 @@
-// src/app/dashboard/page.tsx
 import Dashboard from './dashboard';
 
 const Title = 'Dashboard';

@@ -14,6 +14,7 @@ import UpdateModal from '@/src/containers/Tasks/components/modal/UpdateTaskModal
 import AddTaskModal from '@/src/containers/Tasks/components/modal/AddTaskModal';
 import { useTaskStore } from '@/src/containers/Tasks/store/useTaskStore';
 import { Task } from '@/src/types/task';
+import { filterAndSortTasks, groupTasksByStatus } from './Tasks.utils';
 
 export default function TaskList() {
   const {
@@ -36,7 +37,6 @@ export default function TaskList() {
     reorderTask,
     searchQuery,
     setSearchQuery,
-    statusFilter,
     filters,
     setFilters,
   } = useTaskStore();
@@ -136,108 +136,11 @@ export default function TaskList() {
   };
 
   const filteredTasks = useMemo(() => {
-    const tasksToFilter = tasks;
-    console.log('Tasks entering filter/sort:', JSON.stringify(tasksToFilter.slice(0, 5), null, 2)); // Log first 5 tasks
-
-    const filtered = tasksToFilter.filter((task) => {
-      const matchesSearch =
-        task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        task.description
-          ?.toLowerCase()
-          .includes(searchQuery.toLowerCase() || '');
-
-      const matchesStatus =
-        filters.status === 'ALL' || task.status === filters.status;
-
-      const taskDueDate = task.dueDate ? new Date(task.dueDate) : null;
-      if (
-        filters.dateRange.start &&
-        (!taskDueDate || taskDueDate < filters.dateRange.start)
-      ) {
-        return false;
-      }
-      if (
-        filters.dateRange.end &&
-        (!taskDueDate || taskDueDate > filters.dateRange.end)
-      ) {
-        return false;
-      }
-
-      return matchesSearch && matchesStatus;
-    });
-
-    console.log('Tasks after filtering, before sorting (first 5):', JSON.stringify(filtered.slice(0, 5), null, 2));
-    console.log('Current sort criteria:', JSON.stringify(filters, null, 2));
-
-    return filtered.sort((a: Task, b: Task) => {
-      const { sortBy, sortOrder } = filters;
-      let comparison = 0;
-
-      // Helper to safely get time from date values
-      const getTimeSafe = (dateVal: string | Date | null | undefined): number | null => {
-        if (dateVal == null || dateVal === '') return null; // Treat empty or null as no date
-        const d = new Date(dateVal);
-        return isNaN(d.getTime()) ? null : d.getTime(); // Null for invalid dates
-      };
-
-      // Value accessors
-      // Using 'as any' for simplicity here, but in a real scenario, type-guarding or specific accessors per key are safer
-      let aValue: any = a[sortBy as keyof Task];
-      let bValue: any = b[sortBy as keyof Task];
-
-      // 1. Handle sorting by 'status' (custom order)
-      if (sortBy === 'status') {
-        const statusOrder: Array<Task['status']> = ['PLANNED', 'IN_PROGRESS', 'ON_HOLD', 'DONE'];
-        comparison = statusOrder.indexOf(a.status) - statusOrder.indexOf(b.status);
-      }
-      // 2. Handle sorting by 'createdAt' or 'dueDate'
-      else if (sortBy === 'createdAt' || sortBy === 'dueDate') {
-        const timeA = getTimeSafe(aValue);
-        const timeB = getTimeSafe(bValue);
-
-        if (timeA === null && timeB === null) comparison = 0;
-        else if (timeA === null) comparison = -1; // Nulls/invalid dates come first
-        else if (timeB === null) comparison = 1;
-        else comparison = timeA - timeB;
-      }
-      // 3. Handle other types (string, number)
-      else {
-        // General null/undefined handling: nulls/undefined come first
-        if (aValue == null && bValue == null) comparison = 0;
-        else if (aValue == null) comparison = -1;
-        else if (bValue == null) comparison = 1;
-        // Actual value comparison for non-nulls
-        else if (typeof aValue === 'string' && typeof bValue === 'string') {
-          comparison = aValue.localeCompare(bValue);
-        } else if (typeof aValue === 'number' && typeof bValue === 'number') {
-          comparison = aValue - bValue;
-        }
-        // Add more specific type handlers if needed, e.g., boolean
-      }
-
-      if (comparison === 0) {
-        // Secondary sort by 'order' if primary keys are equal
-        comparison = (a.order || 0) - (b.order || 0);
-      }
-
-      return sortOrder === 'asc' ? comparison : -comparison;
-    });
+    return filterAndSortTasks(tasks, searchQuery, filters);
   }, [tasks, searchQuery, filters]);
 
-  const plannedTasks = useMemo(
-    () => filteredTasks.filter((task) => task.status === 'PLANNED'),
-    [filteredTasks]
-  );
-  const inProgressTasks = useMemo(
-    () => filteredTasks.filter((task) => task.status === 'IN_PROGRESS'),
-    [filteredTasks]
-  );
-  const doneTasks = useMemo(
-    () => filteredTasks.filter((task) => task.status === 'DONE'),
-    [filteredTasks]
-  );
-  const onHoldTasks = useMemo(
-    () => filteredTasks.filter((task) => task.status === 'ON_HOLD'),
+  const { plannedTasks, inProgressTasks, onHoldTasks, doneTasks } = useMemo(
+    () => groupTasksByStatus(filteredTasks),
     [filteredTasks]
   );
 

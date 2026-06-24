@@ -1,4 +1,3 @@
-// src/app/dashboard/dashboard.tsx
 'use client';
 
 import {
@@ -153,7 +152,7 @@ export default function Dashboard() {
             </CardContent>
           </Card>
         </div>
-        <Card className="flex flex-grow flex-col">
+        <Card className="flex grow flex-col">
           <CardHeader className="flex items-center justify-between">
             <CardTitle>
               {view === 'calendar' ? "Today's Events" : "Today's Tasks"}
@@ -167,7 +166,7 @@ export default function Dashboard() {
               <FaExchangeAlt className="h-5 w-5" />
             </button>
           </CardHeader>
-          <CardContent className="max-h-screen flex-grow overflow-y-auto pr-2">
+          <CardContent className="max-h-screen grow overflow-y-auto pr-2">
             <div className="space-y-3">
               {view === 'calendar'
                 ? sampleEvents.map((event) => (

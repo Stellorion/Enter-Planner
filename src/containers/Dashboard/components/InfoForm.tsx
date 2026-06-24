@@ -1,12 +1,11 @@
 'use client';
 
 import FormInput from '@/src/components/ui/inputs/AuthInput';
-import { toast } from 'react-toastify';
 import { ProfileInputs } from '@/src/types/Inputs';
 
 export function InfoForm({ register, errors, isLoading, onSubmit }) {
   return (
-    <div className="rounded-xl border p-6">
+    <div className="rounded-xl border border-gray-300 dark:border-gray-800 p-6">
       <h2 className="mb-4 text-xl font-semibold">Personal Information</h2>
       <form
         onSubmit={onSubmit}
@@ -18,6 +17,10 @@ export function InfoForm({ register, errors, isLoading, onSubmit }) {
             placeholder="First Name"
             register={register('firstName', {
               required: 'First name is required',
+              minLength: {
+                value: 2,
+                message: 'First name must be at least 2 characters',
+              },
             })}
             error={errors.firstName?.message}
             className="w-1/2"
@@ -27,6 +30,10 @@ export function InfoForm({ register, errors, isLoading, onSubmit }) {
             placeholder="Last Name"
             register={register('lastName', {
               required: 'Last name is required',
+              minLength: {
+                value: 2,
+                message: 'Last name must be at least 2 characters',
+              },
             })}
             error={errors.lastName?.message}
             className="w-1/2"
@@ -36,11 +43,21 @@ export function InfoForm({ register, errors, isLoading, onSubmit }) {
         <FormInput
           type="email"
           placeholder="Email"
-          register={register('email', { required: 'Email is required' })}
+          register={register('email', {
+            required: 'Email is required',
+            pattern: {
+              value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+              message: 'Invalid email address',
+            },
+          })}
           error={errors.email?.message}
         />
 
-        <button className="w-full rounded-sm bg-blue-600 py-2 text-gray-200 transition hover:bg-blue-700 dark:hover:bg-blue-500" type="submit" disabled={isLoading}>
+        <button
+          className="w-full rounded-sm bg-blue-600 py-2 text-gray-200 transition hover:bg-blue-700 dark:hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          type="submit"
+          disabled={isLoading}
+        >
           {isLoading ? 'Updating...' : 'Update Profile'}
         </button>
       </form>

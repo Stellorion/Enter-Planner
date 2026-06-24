@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 
 export function PasswordForm({ register, errors, isLoading, onSubmit }) {
   return (
-    <div className="rounded-xl border p-4">
+    <div className="rounded-xl border border-gray-300 dark:border-gray-800 p-4">
       <h2 className="mb-4 text-xl font-semibold">Change Password</h2>
       <form
         onSubmit={onSubmit}
@@ -39,7 +39,7 @@ export function PasswordForm({ register, errors, isLoading, onSubmit }) {
         />
 
         <button
-          className="rounded-sm bg-blue-600 py-2 text-gray-200 transition hover:bg-blue-700 dark:hover:bg-blue-500"
+          className="w-full rounded-sm bg-blue-600 py-2 text-gray-200 transition hover:bg-blue-700 dark:hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
           type="submit"
           disabled={isLoading}
         >

@@ -21,16 +21,9 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
   searchQuery: '',
   setSearchQuery: (query) => set({ searchQuery: query }),
 
-  statusFilter: 'ALL',
-  setStatusFilter: (
-    status: 'ALL' | 'PLANNED' | 'IN_PROGRESS' | 'ON_HOLD' | 'DONE'
-  ) => set({ statusFilter: status }),
-
   filters: {
     status: 'ALL',
     dateRange: { start: null, end: null },
-    sortBy: 'createdAt',
-    sortOrder: 'asc',
   },
   setFilters: (filters: TaskFilters) => set({ filters }),
 

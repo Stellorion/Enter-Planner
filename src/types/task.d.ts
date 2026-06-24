@@ -6,7 +6,6 @@ export interface TaskStore {
   newTask: Task;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
-  statusFilter: 'ALL' | 'PLANNED' | 'IN_PROGRESS' | 'ON_HOLD' | 'DONE';
   filters: TaskFilters;
   setFilters: (filters: TaskFilters) => void;
   fetchTasks: () => Promise<void>;
@@ -70,8 +69,6 @@ export interface TaskFilters {
     start: Date | null;
     end: Date | null;
   };
-  sortBy: 'createdAt' | 'dueDate' | 'title' | 'status' | 'progress';
-  sortOrder: 'asc' | 'desc';
 }
 
 export interface FilterPopoverProps {
