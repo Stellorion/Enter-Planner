@@ -1,14 +1,33 @@
 'use client';
 
 import FormInput from '@/src/components/ui/inputs/AuthInput';
-import { ProfileInputs } from '@/src/types/Inputs';
 
-export function InfoForm({ register, errors, isLoading, onSubmit }) {
+interface InfoFormProps {
+  register: any;
+  errors: any;
+  isLoading: boolean;
+  onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
+}
+
+export function InfoForm({ register, errors, isLoading, onSubmit }: InfoFormProps) {
+  const validateName = (value: string) => {
+    if (!value || value.trim() === '') return true;
+    return value.trim().length >= 2 || 'Must be at least 2 characters';
+  };
+
+  const validateEmail = (value: string) => {
+    if (!value || value.trim() === '') return true;
+    return /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(value) || 'Invalid email address';
+  };
+
   return (
     <div className="rounded-xl border border-gray-300 dark:border-gray-800 p-6">
       <h2 className="mb-4 text-xl font-semibold">Personal Information</h2>
       <form
-        onSubmit={onSubmit}
+        onSubmit={(event) => {
+          event.preventDefault();
+          onSubmit(event);
+        }}
         className="flex w-full flex-col justify-center space-y-4"
       >
         <div className="mb-4 flex space-x-2">
@@ -16,11 +35,7 @@ export function InfoForm({ register, errors, isLoading, onSubmit }) {
             type="text"
             placeholder="First Name"
             register={register('firstName', {
-              required: 'First name is required',
-              minLength: {
-                value: 2,
-                message: 'First name must be at least 2 characters',
-              },
+              validate: validateName,
             })}
             error={errors.firstName?.message}
             className="w-1/2"
@@ -29,11 +44,7 @@ export function InfoForm({ register, errors, isLoading, onSubmit }) {
             type="text"
             placeholder="Last Name"
             register={register('lastName', {
-              required: 'Last name is required',
-              minLength: {
-                value: 2,
-                message: 'Last name must be at least 2 characters',
-              },
+              validate: validateName,
             })}
             error={errors.lastName?.message}
             className="w-1/2"
@@ -44,11 +55,7 @@ export function InfoForm({ register, errors, isLoading, onSubmit }) {
           type="email"
           placeholder="Email"
           register={register('email', {
-            required: 'Email is required',
-            pattern: {
-              value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-              message: 'Invalid email address',
-            },
+            validate: validateEmail,
           })}
           error={errors.email?.message}
         />

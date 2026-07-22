@@ -65,11 +65,37 @@ export const authOptions: NextAuthOptions = {
         return {
           ...token,
           id: user.id,
+          email: user.email,
           firstName: user.firstName,
           lastName: user.lastName,
           userRole: user.userRole,
         };
       }
+
+      if (token.id) {
+        const dbUser = await db.user.findUnique({
+          where: { id: Number(token.id) },
+          select: {
+            id: true,
+            email: true,
+            firstName: true,
+            lastName: true,
+            role: true,
+          },
+        });
+
+        if (dbUser) {
+          return {
+            ...token,
+            id: `${dbUser.id}`,
+            email: dbUser.email,
+            firstName: dbUser.firstName,
+            lastName: dbUser.lastName,
+            userRole: dbUser.role,
+          };
+        }
+      }
+
       return token;
     },
     async session({ session, token }) {
@@ -78,6 +104,7 @@ export const authOptions: NextAuthOptions = {
         user: {
           ...session.user,
           id: token.id,
+          email: token.email,
           firstName: token.firstName,
           lastName: token.lastName,
           userRole: token.userRole,

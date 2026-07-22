@@ -57,12 +57,6 @@ export default function Sidebar() {
           isOpen={isSidebarExpanded}
         />
         <SidebarItem
-          href="/dashboard/settings"
-          label="Settings"
-          icon={<FaRegSun className="h-5 w-5" />}
-          isOpen={isSidebarExpanded}
-        />
-        <SidebarItem
           href="https://gethelpisrael.com/psychiatric-facilities/"
           label="Help"
           icon={<FaRegQuestionCircle className="h-5 w-5" />}

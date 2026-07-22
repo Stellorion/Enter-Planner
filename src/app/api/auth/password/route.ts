@@ -28,9 +28,15 @@ export async function PUT(req: Request) {
       );
     }
 
+    const userId = Number(session.user.id);
+
+    if (!Number.isInteger(userId)) {
+      return NextResponse.json({ error: 'Invalid user session' }, { status: 401 });
+    }
+
     // Get user
     const user = await db.user.findUnique({
-      where: { id: parseInt(session.user.id) },
+      where: { id: userId },
     });
 
     if (!user) {
@@ -51,7 +57,7 @@ export async function PUT(req: Request) {
 
     // Update password
     await db.user.update({
-      where: { id: parseInt(session.user.id) },
+      where: { id: userId },
       data: {
         password: hashedPassword,
       },

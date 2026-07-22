@@ -4,6 +4,7 @@ const FormInput: React.FC<FormInputProps> = ({
   type,
   placeholder,
   register,
+  error,
 }) => {
   return (
     <div className="w-full">
@@ -13,6 +14,7 @@ const FormInput: React.FC<FormInputProps> = ({
         {...register}
         className="w-full rounded-sm text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-800 bg-white dark:bg-gray-900 p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
       />
+      {error ? <p className="mt-1 text-sm text-red-500">{error}</p> : null}
     </div>
   );
 };
