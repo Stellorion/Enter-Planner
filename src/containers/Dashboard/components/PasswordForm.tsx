@@ -12,7 +12,7 @@ interface PasswordFormProps {
 
 export function PasswordForm({ register, errors, isLoading, onSubmit }: PasswordFormProps) {
   return (
-    <div className="rounded-xl border border-gray-300 dark:border-gray-800 p-4">
+    <div className="rounded-xl bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-800 shadow-xl p-4">
       <h2 className="mb-4 text-xl font-semibold">Change Password</h2>
       <form
         onSubmit={(event) => {

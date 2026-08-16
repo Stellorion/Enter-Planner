@@ -21,7 +21,7 @@ export function InfoForm({ register, errors, isLoading, onSubmit }: InfoFormProp
   };
 
   return (
-    <div className="rounded-xl border border-gray-300 dark:border-gray-800 p-6">
+    <div className="rounded-xl bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-800 shadow-xl p-6">
       <h2 className="mb-4 text-xl font-semibold">Personal Information</h2>
       <form
         onSubmit={(event) => {

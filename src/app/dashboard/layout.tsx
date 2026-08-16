@@ -5,7 +5,7 @@ import Sidebar from '@/src/containers/Dashboard/components/Sidebar';
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="flex min-h-screen mt-18 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+    <div className="flex min-h-screen mt-18 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
       <Sidebar />
       <main className="flex-1 p-10">
         {children}

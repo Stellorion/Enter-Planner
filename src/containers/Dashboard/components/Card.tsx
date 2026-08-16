@@ -1,4 +1,3 @@
-// components/ui/card.tsx
 import React from "react";
 
 interface CardProps extends React.HTMLAttributes<HTMLDivElement> {}

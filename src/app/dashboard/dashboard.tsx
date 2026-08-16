@@ -95,14 +95,14 @@ export default function Dashboard() {
   return (
       <div className="flex min-h-screen flex-col">
         <div className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Card>
+          <Card className='bg-white dark:bg-gray-900'>
             <CardContent>
               <h3 className="text-xl font-semibold">Today's Date</h3>
               <p className="text-lg">{today}</p> {/* Dynamic date */}
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className='bg-white dark:bg-gray-900'>
             <CardContent>
               <h3 className="text-xl font-semibold">Account Status</h3>
               <p className="text-sm font-semibold text-green-600 dark:text-green-400">
@@ -113,7 +113,7 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className='bg-white dark:bg-gray-900'>
             <CardContent>
               <h3 className="text-xl font-semibold">Connected Services</h3>
               <ul>
@@ -123,7 +123,7 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className='bg-white dark:bg-gray-900'>
             <CardContent>
               <h3 className="text-xl font-semibold">Notifications</h3>
               {/* Displaying if notifications are enabled or disabled */}
@@ -138,7 +138,7 @@ export default function Dashboard() {
                 <ul className="mt-2">
                   {enabledAlerts.length > 0 ? (
                     enabledAlerts.map((alert) => (
-                      <li key={alert} className="text-sm text-gray-300">
+                      <li key={alert} className="text-sm text-gray-500">
                         - {alert}
                       </li>
                     ))
@@ -152,7 +152,7 @@ export default function Dashboard() {
             </CardContent>
           </Card>
         </div>
-        <Card className="flex grow flex-col">
+        <Card className="flex grow flex-col bg-white dark:bg-gray-900">
           <CardHeader className="flex items-center justify-between">
             <CardTitle>
               {view === 'calendar' ? "Today's Events" : "Today's Tasks"}
