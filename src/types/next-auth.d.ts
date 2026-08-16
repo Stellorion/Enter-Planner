@@ -6,6 +6,8 @@ interface UserBase {
   firstName: string;
   lastName: string;
   userRole: string;
+  accessToken?: string;
+  provider?: string;
 }
 
 declare module 'next-auth' {
@@ -13,9 +15,14 @@ declare module 'next-auth' {
 
   interface Session {
     user: UserBase;
+    accessToken?: string;
+    provider?: string;
   }
 }
 
 declare module 'next-auth/jwt' {
-  interface JWT extends UserBase {}
+  interface JWT extends UserBase {
+    accessToken?: string;
+    provider?: string;
+  }
 }

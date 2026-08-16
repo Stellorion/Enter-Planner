@@ -14,14 +14,14 @@ const LoginPage = async () => {
   }
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <div className="flex flex-grow items-center justify-center">
+    <div className="flex min-h-screen flex-col bg-gray-200 dark:bg-gray-950">
+      <div className="flex grow items-center justify-center">
         <ToastNotification />
-        <div className="flex w-[90vw] flex-col rounded-sm bg-white dark:bg-gray-900 p-8 text-gray-900 dark:text-gray-100 shadow-lg md:w-[50vw] lg:h-[75vh] lg:w-[30vw]">
+        <div className="flex w-[90vw] flex-col rounded-xl bg-white p-8 text-gray-900 shadow-[0_10px_40px_rgba(15,23,42,0.15),0_2px_10px_rgba(37,99,235,0.08)] transition-shadow duration-300 md:w-[50vw] lg:h-[75vh] lg:w-[30vw] dark:bg-gray-900 dark:text-gray-100 dark:shadow-[0_10px_40px_rgba(0,0,0,0.4),0_0_30px_rgba(59,130,246,0.08)]">
           <div className="flex w-full flex-col items-center justify-center">
             <LoginHeader />
             <LoginForm />
-            <SocialLoginSection SocialTitleText="Or log in with"/>
+            <SocialLoginSection SocialTitleText="Or log in with" />
           </div>
         </div>
       </div>

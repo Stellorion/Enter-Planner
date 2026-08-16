@@ -1,12 +1,27 @@
 import NextAuth from 'next-auth';
 import type { NextAuthOptions } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
-import { PrismaAdapter } from '@next-auth/prisma-adapter';
+import GitHubProvider from 'next-auth/providers/github';
+import GoogleProvider from 'next-auth/providers/google';
 import { db } from '@/db/connect';
 import { compareFunction } from '@/utils/hashFunction';
 
+const hasGoogleConfig = !!
+  process.env.GOOGLE_CLIENT_ID && !!process.env.GOOGLE_CLIENT_SECRET;
+const hasGithubConfig = !!
+  process.env.GITHUB_CLIENT_ID && !!process.env.GITHUB_CLIENT_SECRET;
+
+const getNameParts = (fullName?: string | null) => {
+  const safeName = fullName?.trim() || 'User';
+  const parts = safeName.split(/\s+/);
+
+  return {
+    firstName: parts[0] || 'User',
+    lastName: parts.slice(1).join(' ') || '',
+  };
+};
+
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(db),
   session: {
     strategy: 'jwt',
   },
@@ -14,6 +29,28 @@ export const authOptions: NextAuthOptions = {
     signIn: '/login',
   },
   providers: [
+    ...(hasGoogleConfig
+      ? [
+          GoogleProvider({
+            clientId: process.env.GOOGLE_CLIENT_ID!,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+            authorization: {
+              params: {
+                scope:
+                  'openid email profile https://www.googleapis.com/auth/calendar.readonly',
+              },
+            },
+          }),
+        ]
+      : []),
+    ...(hasGithubConfig
+      ? [
+          GitHubProvider({
+            clientId: process.env.GITHUB_CLIENT_ID!,
+            clientSecret: process.env.GITHUB_CLIENT_SECRET!,
+          }),
+        ]
+      : []),
     Credentials({
       name: 'Credentials',
       credentials: {
@@ -36,7 +73,7 @@ export const authOptions: NextAuthOptions = {
           where: { email },
         });
 
-        if (!existingUserByEmail) {
+        if (!existingUserByEmail || !existingUserByEmail.password) {
           return null;
         }
 
@@ -60,16 +97,72 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        return {
-          ...token,
-          id: user.id,
+    async signIn({ user, account }) {
+      if (!user?.email) {
+        return false;
+      }
+
+      if (account?.provider !== 'google' && account?.provider !== 'github') {
+        return true;
+      }
+
+      const existingUserByEmail = await db.user.findUnique({
+        where: { email: user.email },
+      });
+
+      if (existingUserByEmail) {
+        const nameParts = getNameParts(user.name);
+
+        await db.user.update({
+          where: { id: existingUserByEmail.id },
+          data: {
+            firstName: existingUserByEmail.firstName || nameParts.firstName,
+            lastName: existingUserByEmail.lastName || nameParts.lastName,
+            password: existingUserByEmail.password || '',
+          },
+        });
+
+        return true;
+      }
+
+      const { firstName, lastName } = getNameParts(user.name);
+
+      await db.user.create({
+        data: {
           email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          userRole: user.userRole,
-        };
+          firstName,
+          lastName,
+          password: '',
+        },
+      });
+
+      return true;
+    },
+    async jwt({ token, user, account }) {
+      if (user?.email) {
+        const dbUser = await db.user.findUnique({
+          where: { email: user.email },
+          select: {
+            id: true,
+            email: true,
+            firstName: true,
+            lastName: true,
+            role: true,
+          },
+        });
+
+        if (dbUser) {
+          return {
+            ...token,
+            id: `${dbUser.id}`,
+            email: dbUser.email,
+            firstName: dbUser.firstName,
+            lastName: dbUser.lastName,
+            userRole: dbUser.role,
+            accessToken: account?.access_token || token.accessToken,
+            provider: account?.provider || token.provider,
+          };
+        }
       }
 
       if (token.id) {
@@ -92,15 +185,23 @@ export const authOptions: NextAuthOptions = {
             firstName: dbUser.firstName,
             lastName: dbUser.lastName,
             userRole: dbUser.role,
+            accessToken: token.accessToken,
+            provider: token.provider,
           };
         }
       }
 
-      return token;
+      return {
+        ...token,
+        accessToken: token.accessToken,
+        provider: token.provider,
+      };
     },
     async session({ session, token }) {
       return {
         ...session,
+        accessToken: token.accessToken,
+        provider: token.provider,
         user: {
           ...session.user,
           id: token.id,
