@@ -5,6 +5,7 @@ export interface FormInputProps {
   placeholder: string;
   register: any;
   className?: string;
+  error?: string;
 }
 
 type BaseInputs = {
@@ -18,6 +19,12 @@ export type SignupInputs = BaseInputs & {
   firstName: string;
   lastName: string;
   confirmPassword: string;
+};
+
+export type ProfileInputs = {
+  firstName?: string;
+  lastName?: string;
+  email?: string;
 };
 
 export interface TitleInputProps {

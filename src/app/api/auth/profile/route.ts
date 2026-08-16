@@ -13,36 +13,56 @@ export async function PUT(req: Request) {
     const body = await req.json();
     const { firstName, lastName, email } = body;
 
-    if (!firstName || !lastName || !email) {
+    const updateData: { firstName?: string; lastName?: string; email?: string } = {};
+
+    if (typeof firstName === 'string' && firstName.trim() !== '') {
+      updateData.firstName = firstName.trim();
+    }
+
+    if (typeof lastName === 'string' && lastName.trim() !== '') {
+      updateData.lastName = lastName.trim();
+    }
+
+    if (typeof email === 'string' && email.trim() !== '') {
+      updateData.email = email.trim();
+    }
+
+    if (Object.keys(updateData).length === 0) {
       return NextResponse.json(
-        { error: 'First name, last name, and email are required' },
+        { error: 'Please provide at least one field to update' },
         { status: 400 }
       );
     }
 
-    // Check if email is already taken by another user
-    const existingUser = await db.user.findFirst({
-      where: {
-        email,
-        id: { not: parseInt(session.user.id) },
-      },
-    });
-
-    if (existingUser) {
-      return NextResponse.json(
-        { error: 'Email already in use' },
-        { status: 400 }
-      );
+    if (updateData.email) {
+      const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+      if (!emailRegex.test(updateData.email)) {
+        return NextResponse.json(
+          { error: 'Invalid email address' },
+          { status: 400 }
+        );
+      }
     }
 
-    // Update user
+    if (updateData.email) {
+      const existingUser = await db.user.findFirst({
+        where: {
+          email: updateData.email,
+          id: { not: parseInt(session.user.id) },
+        },
+      });
+
+      if (existingUser) {
+        return NextResponse.json(
+          { error: 'Email already in use' },
+          { status: 400 }
+        );
+      }
+    }
+
     const updatedUser = await db.user.update({
       where: { id: parseInt(session.user.id) },
-      data: {
-        firstName,
-        lastName,
-        email,
-      },
+      data: updateData,
     });
 
     return NextResponse.json({

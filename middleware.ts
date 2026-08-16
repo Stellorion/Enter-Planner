@@ -1,11 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyToken } from './utils/jwt';
+
+const PUBLIC_API_ROUTES = ['/api/register', '/api/login'];
 
 export function middleware(req: NextRequest) {
-  const token = req.headers.get('authorization')?.split(' ')[1];
+  const pathname = req.nextUrl.pathname;
 
-  if (!token || !verifyToken(token)) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (PUBLIC_API_ROUTES.some((route) => pathname === route)) {
+    return NextResponse.next();
+  }
+
+  if (pathname.startsWith('/api/auth')) {
+    return NextResponse.next();
   }
 
   return NextResponse.next();

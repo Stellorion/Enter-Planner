@@ -3,12 +3,22 @@
 import FormInput from '@/src/components/ui/inputs/AuthInput';
 import { toast } from 'react-toastify';
 
-export function PasswordForm({ register, errors, isLoading, onSubmit }) {
+interface PasswordFormProps {
+  register: any;
+  errors: any;
+  isLoading: boolean;
+  onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
+}
+
+export function PasswordForm({ register, errors, isLoading, onSubmit }: PasswordFormProps) {
   return (
     <div className="rounded-xl border border-gray-300 dark:border-gray-800 p-4">
       <h2 className="mb-4 text-xl font-semibold">Change Password</h2>
       <form
-        onSubmit={onSubmit}
+        onSubmit={(event) => {
+          event.preventDefault();
+          onSubmit(event);
+        }}
         className="flex w-full flex-col justify-center space-y-4"
       >
         <FormInput
