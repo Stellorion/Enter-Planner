@@ -48,7 +48,7 @@ const OnboardSection = () => {
           ))}
         </div>
         <div className="mt-16 text-center">
-          <Link href='./signup' className="rounded-lg bg-blue-600 px-6 py-4 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600">
+          <Link href='./signup' className="rounded-lg text-white bg-blue-600 px-6 py-4 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600">
             Get started now
           </Link>
         </div>
