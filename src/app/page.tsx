@@ -1,30 +1,49 @@
+'use client';
+
 import FeatureSection from '../containers/Landing/FeatureSection';
 import HeroSection from '../containers/Landing/HeroSection';
 import OnboardSection from '../containers/Landing/OnboardSection';
-import ForceField from '../components/canvasui/ForceField';
+import Scanner from '@/src/components/Scanner';
+import { useThemeStore } from '../store/useThemeStore';
 
 const LandingPage = () => {
+  const theme = useThemeStore((state) => state.theme);
+  const isDark = theme === 'dark';
+
   return (
-    <ForceField
-      cellScale={35}
-      // Light mode
-      lightColor={[0.05, 0.3, 0.85]}
-      lightEdgeColor={[0.1, 0.4, 1.0]}
-      // Dark mode
-      darkColor={[0.15, 0.68, 1.0]}
-      darkEdgeColor={[0.5, 0.8, 1.0]}
-      opacity={1}
-      gridOpacity={0.3}
-      edgeGlow={0.35}
-      hoverGlow={0.4}
-      bloom={1.2}
-    >
-      <main className="flex flex-1 flex-col items-center justify-center bg-white px-6 dark:bg-gray-900">
+    <main className="relative isolate min-h-screen overflow-hidden bg-white dark:bg-[#020817]">
+      <div className="absolute inset-0 -z-10">
+        <Scanner
+          color1={isDark ? '#020817' : '#FFFFFF'}
+          color2={isDark ? '#1E293B' : '#020817'}
+          color3={isDark ? '#3B82F6' : '#2563EB'}
+          speed={1.2}
+          sweepSpeed={0.6}
+          sweepWidth={1}
+          trail={0.5}
+          ripple={0.7}
+          bandDensity={25}
+          glow={0.6}
+          scanDirection="vertical"
+          colorSpread={0.6}
+          scanline
+          scanlineIntensity={0.5}
+          mouseInteraction={false}
+          clickEffect="none"
+          frequency={4}
+          lineWidth={2}
+          brightness={0.7}
+          vignette={0.7}
+          grainIntensity={0.05}
+        />
+      </div>
+
+      <div className="relative z-10 flex flex-col items-center">
         <HeroSection />
         <FeatureSection />
         <OnboardSection />
-      </main>
-    </ForceField>
+      </div>
+    </main>
   );
 };
 
